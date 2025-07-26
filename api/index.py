@@ -67,6 +67,6 @@ def submit_post():
     response = requests.post(url, headers=headers, json=data)
 
     if response.status_code == 204:
-        return redirect(url_for('home'))
+        return render_template('create_post.html', message="Post created successfully! Your post is being processed.")
     else:
-        return f"Failed to trigger workflow: {response.status_code} - {response.text}", 500
+        return render_template('create_post.html', message=f"Failed to create post: {response.status_code} - {response.text}"), 500
