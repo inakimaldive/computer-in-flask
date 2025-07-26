@@ -25,7 +25,36 @@
                 <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Create Post</button>
+            <button type="button" class="btn btn-secondary" id="generate-post-btn">Generate Post</button>
         </form>
     </div>
+
+    <script>
+        document.getElementById('generate-post-btn').addEventListener('click', async function() {
+            const btn = this;
+            btn.disabled = true;
+            btn.textContent = 'Generating...';
+
+            try {
+                const response = await fetch('/api/generate-post', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('title').value = data.title;
+                    document.getElementById('content').value = data.content;
+                } else {
+                    alert(data.error || 'Failed to generate post.');
+                }
+            } catch (error) {
+                console.error('Error generating post:', error);
+                alert('An error occurred while generating the post.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Generate Post';
+            }
+        });
+    </script>
 </body>
 </html>

@@ -114,3 +114,25 @@ def api_chat():
     response = model.generate_content(message)
     
     return jsonify({'reply': response.text})
+
+@app.route('/api/generate-post', methods=['POST'])
+def generate_post():
+    gemini_api_key = os.environ.get('GEMINI_API_KEY')
+    if not gemini_api_key:
+        return jsonify({'error': 'Gemini API key not found.'}), 500
+
+    try:
+        genai.configure(api_key=gemini_api_key)
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        prompt = "Generate a random blog post title and content. The title should be short and catchy. The content should be a few paragraphs long."
+        response = model.generate_content(prompt)
+        
+        # Assuming the response is in the format "Title: [title]\n\n[content]"
+        parts = response.text.split('\n\n', 1)
+        title = parts[0].replace('Title: ', '')
+        content = parts[1]
+
+        return jsonify({'title': title, 'content': content})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
