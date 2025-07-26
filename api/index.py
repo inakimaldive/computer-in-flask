@@ -67,18 +67,21 @@ def post(filename):
 def rss_feed():
     # Using BBC News RSS feed as an example
     rss_url = "https://feeds.bbci.co.uk/news/rss.xml"
-    feed = feedparser.parse(rss_url)
-    
-    feed_items = []
-    for entry in feed.entries:
-        feed_items.append({
-            'title': entry.title,
-            'link': entry.link,
-            'published': entry.published,
-            'summary': entry.summary
-        })
-    
-    return render_template('rss.html', feed_items=feed_items)
+    try:
+        feed = feedparser.parse(rss_url)
+        
+        feed_items = []
+        for entry in feed.entries:
+            feed_items.append({
+                'title': entry.title,
+                'link': entry.link,
+                'published': entry.published,
+                'summary': entry.summary
+            })
+        
+        return render_template('rss.html', feed_items=feed_items)
+    except Exception as e:
+        return f"Error fetching RSS feed: {e}", 500
 
 @app.route('/submit-post', methods=['POST'])
 def submit_post():
@@ -109,6 +112,10 @@ def submit_post():
 
     if response.status_code == 204:
         return render_template('create_post.html', message="Post created successfully! Your post is being processed.")
+    elif response.status_code == 401:
+        return render_template('create_post.html', message="Error: Unauthorized. Please check your GitHub token."), 401
+    elif response.status_code == 404:
+        return render_template('create_post.html', message="Error: Repository or workflow not found."), 404
     else:
         return render_template('create_post.html', message=f"Failed to create post: {response.status_code} - {response.text}"), 500
 
