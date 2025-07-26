@@ -22,16 +22,11 @@ def get_time():
     from datetime import datetime
     return f"<div>{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</div>"
 
-@app.route('/time-page')
-def time_page():
-    return render_template('time.html')
-
 @app.route('/create-post')
 def create_post():
     return render_template('create_post.html')
 
-@app.route('/blog')
-def blog():
+def get_posts():
     posts = []
     contents_dir = 'contents'
     if os.path.exists(contents_dir):
@@ -40,13 +35,11 @@ def blog():
                 with open(os.path.join(contents_dir, filename), 'r') as f:
                     content = f.read()
                     title = content.split('\n')[0].replace('# ', '')
-                    # Generate a preview (e.g., first 100 characters)
                     body_preview = '\n'.join(content.split('\n')[1:])[:100] + '...'
                     posts.append({'title': title, 'content': body_preview, 'filename': filename})
-    return render_template('blog.html', posts=posts)
+    return posts
 
-@app.route('/post/<filename>')
-def post(filename):
+def get_post(filename):
     contents_dir = 'contents'
     filepath = os.path.join(contents_dir, filename)
     if os.path.exists(filepath):
@@ -54,7 +47,19 @@ def post(filename):
             content = f.read()
             title = content.split('\n')[0].replace('# ', '')
             body = '\n'.join(content.split('\n')[1:])
-            return render_template('post.html', title=title, content=body)
+            return {'title': title, 'content': body}
+    return None
+
+@app.route('/blog')
+def blog():
+    posts = get_posts()
+    return render_template('blog.html', posts=posts)
+
+@app.route('/post/<filename>')
+def post(filename):
+    post_data = get_post(filename)
+    if post_data:
+        return render_template('post.html', title=post_data['title'], content=post_data['content'])
     else:
         return "Post not found", 404
 
@@ -81,11 +86,11 @@ def submit_post():
     content = request.form['content']
 
     github_token = os.environ.get('GITHUB_TOKEN')
-    repo_owner = "inakimaldive"
-    repo_name = "computer-in-flask"
-    workflow_id = "create-post.yml"
+    GITHUB_REPO_OWNER = os.environ.get('GITHUB_REPO_OWNER', 'inakimaldive')
+    GITHUB_REPO_NAME = os.environ.get('GITHUB_REPO_NAME', 'computer-in-flask')
+    workflow_id = os.environ.get('WORKFLOW_ID', 'create-post.yml')
 
-    url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/actions/workflows/{workflow_id}/dispatches"
+    url = f"https://api.github.com/repos/{GITHUB_REPO_OWNER}/{GITHUB_REPO_NAME}/actions/workflows/{workflow_id}/dispatches"
 
     headers = {
         "Accept": "application/vnd.github.v3+json",
@@ -115,14 +120,18 @@ def store():
 def chat():
     return render_template('chat.html')
 
-@app.route('/api/chat', methods=['POST'])
-def api_chat():
+def get_gemini_model():
     gemini_api_key = os.environ.get('GEMINI_API_KEY')
     if not gemini_api_key:
-        return jsonify({'reply': 'Error: Gemini API key not found.'}), 500
-
+        return None
     genai.configure(api_key=gemini_api_key)
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    return genai.GenerativeModel('gemini-1.5-flash')
+
+@app.route('/api/chat', methods=['POST'])
+def api_chat():
+    model = get_gemini_model()
+    if not model:
+        return jsonify({'reply': 'Error: Gemini API key not found.'}), 500
     
     message = request.json['message']
     response = model.generate_content(message)
@@ -131,14 +140,11 @@ def api_chat():
 
 @app.route('/api/generate-post', methods=['POST'])
 def generate_post():
-    gemini_api_key = os.environ.get('GEMINI_API_KEY')
-    if not gemini_api_key:
+    model = get_gemini_model()
+    if not model:
         return jsonify({'error': 'Gemini API key not found.'}), 500
 
     try:
-        genai.configure(api_key=gemini_api_key)
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        
         prompt = "Generate a random blog post title and content. The title should be short and catchy. The content should be a few paragraphs long."
         response = model.generate_content(prompt)
         
