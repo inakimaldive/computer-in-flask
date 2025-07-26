@@ -25,6 +25,20 @@ def time_page():
 def create_post():
     return render_template('create_post.html')
 
+@app.route('/blog')
+def blog():
+    posts = []
+    contents_dir = 'contents'
+    if os.path.exists(contents_dir):
+        for filename in os.listdir(contents_dir):
+            if filename.endswith('.md'):
+                with open(os.path.join(contents_dir, filename), 'r') as f:
+                    content = f.read()
+                    title = content.split('\n')[0].replace('# ', '')
+                    body = '\n'.join(content.split('\n')[1:])
+                    posts.append({'title': title, 'content': body})
+    return render_template('blog.html', posts=posts)
+
 @app.route('/submit-post', methods=['POST'])
 def submit_post():
     title = request.form['title']

@@ -43,3 +43,20 @@ The application will be available at `http://localhost:5001`.
 You can also deploy this application to Vercel with a single click:
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Finakimaldive%2Fcomputer-in-flask)
+
+
+## rememeber
+
+Grant write permission to GitHub Actions
+
+Go to your repo settings:
+
+    Settings → Actions → General
+
+    Scroll down to Workflow permissions
+
+    Select:
+
+        ✅ Read and write permissions
+
+    Click Save
