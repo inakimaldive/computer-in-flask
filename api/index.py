@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 import requests
 import os
+import feedparser # Import feedparser
 
 app = Flask(__name__, template_folder='../templates')
 
@@ -38,6 +39,23 @@ def blog():
                     body = '\n'.join(content.split('\n')[1:])
                     posts.append({'title': title, 'content': body})
     return render_template('blog.html', posts=posts)
+
+@app.route('/rss')
+def rss_feed():
+    # Using BBC News RSS feed as an example
+    rss_url = "https://feeds.bbci.co.uk/news/rss.xml"
+    feed = feedparser.parse(rss_url)
+    
+    feed_items = []
+    for entry in feed.entries:
+        feed_items.append({
+            'title': entry.title,
+            'link': entry.link,
+            'published': entry.published,
+            'summary': entry.summary
+        })
+    
+    return render_template('rss.html', feed_items=feed_items)
 
 @app.route('/submit-post', methods=['POST'])
 def submit_post():
