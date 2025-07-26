@@ -5,6 +5,8 @@
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
 </head>
 <body>
+    {% include 'navbar.html' %}
+
     <h1>Current Date and Time</h1>
     <div hx-get="/time" hx-trigger="every 1s" hx-swap="innerHTML">
         Loading...
