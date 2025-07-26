@@ -22,6 +22,10 @@ def get_time():
     from datetime import datetime
     return f"<div>{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</div>"
 
+@app.route('/time-page')
+def time_page():
+    return render_template('time.html')
+
 @app.route('/create-post')
 def create_post():
     return render_template('create_post.html')
