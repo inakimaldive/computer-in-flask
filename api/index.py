@@ -40,9 +40,23 @@ def blog():
                 with open(os.path.join(contents_dir, filename), 'r') as f:
                     content = f.read()
                     title = content.split('\n')[0].replace('# ', '')
-                    body = '\n'.join(content.split('\n')[1:])
-                    posts.append({'title': title, 'content': body})
+                    # Generate a preview (e.g., first 100 characters)
+                    body_preview = '\n'.join(content.split('\n')[1:])[:100] + '...'
+                    posts.append({'title': title, 'content': body_preview, 'filename': filename})
     return render_template('blog.html', posts=posts)
+
+@app.route('/post/<filename>')
+def post(filename):
+    contents_dir = 'contents'
+    filepath = os.path.join(contents_dir, filename)
+    if os.path.exists(filepath):
+        with open(filepath, 'r') as f:
+            content = f.read()
+            title = content.split('\n')[0].replace('# ', '')
+            body = '\n'.join(content.split('\n')[1:])
+            return render_template('post.html', title=title, content=body)
+    else:
+        return "Post not found", 404
 
 @app.route('/rss')
 def rss_feed():

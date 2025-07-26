@@ -37,3 +37,30 @@ h1 {
 .news-list li p {
     margin-bottom: 5px;
 }
+
+.card-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Store page styles */
+.cart {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.cart-item, .cart-total {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.cart-total {
+    font-weight: bold;
+}
