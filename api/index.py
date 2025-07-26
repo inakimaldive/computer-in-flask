@@ -1,7 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import requests
 import os
 import feedparser # Import feedparser
+import google.generativeai as genai
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__, template_folder='../templates')
 
@@ -88,3 +92,25 @@ def submit_post():
         return render_template('create_post.html', message="Post created successfully! Your post is being processed.")
     else:
         return render_template('create_post.html', message=f"Failed to create post: {response.status_code} - {response.text}"), 500
+
+@app.route('/store')
+def store():
+    return render_template('store.html')
+
+@app.route('/chat')
+def chat():
+    return render_template('chat.html')
+
+@app.route('/api/chat', methods=['POST'])
+def api_chat():
+    gemini_api_key = os.environ.get('GEMINI_API_KEY')
+    if not gemini_api_key:
+        return jsonify({'reply': 'Error: Gemini API key not found.'}), 500
+
+    genai.configure(api_key=gemini_api_key)
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    
+    message = request.json['message']
+    response = model.generate_content(message)
+    
+    return jsonify({'reply': response.text})

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h1>Shopping Cart</h1>
+        <div class="cart">
+            <div class="cart-item">
+                <p>Product 1</p>
+                <p>$10.00</p>
+            </div>
+            <div class="cart-item">
+                <p>Product 2</p>
+                <p>$20.00</p>
+            </div>
+            <div class="cart-total">
+                <p>Total:</p>
+                <p>$30.00</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
