@@ -1,0 +1,38 @@
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 20px;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+h1 {
+    color: #0056b3;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background: #fff;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+li h2 {
+    margin-top: 0;
+    color: #0056b3;
+}
+
+li h2 a {
+    text-decoration: none;
+    color: #0056b3;
+}
+
+li p {
+    margin-bottom: 5px;
+}
