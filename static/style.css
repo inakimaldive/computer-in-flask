@@ -10,12 +10,13 @@ h1 {
     color: #0056b3;
 }
 
-ul {
+/* Styles for the news list items */
+.news-list ul {
     list-style: none;
     padding: 0;
 }
 
-li {
+.news-list li {
     background: #fff;
     padding: 10px;
     margin-bottom: 10px;
@@ -23,16 +24,16 @@ li {
     border: 1px solid #ddd;
 }
 
-li h2 {
+.news-list li h2 {
     margin-top: 0;
     color: #0056b3;
 }
 
-li h2 a {
+.news-list li h2 a {
     text-decoration: none;
     color: #0056b3;
 }
 
-li p {
+.news-list li p {
     margin-bottom: 5px;
 }

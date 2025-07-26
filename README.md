@@ -33,6 +33,10 @@ To run the application locally, you will need to have Python and Flask installed
     export GITHUB_TOKEN="your_github_token"
     ```
 4.  **Run the application:**
+    This script automates the process of killing any existing processes on port 5001, setting up the virtual environment, installing dependencies, and starting the Flask server.
+    ```bash
+    ./start_server.sh
+    ```
     ```bash
     ./start_server.sh
     ```
