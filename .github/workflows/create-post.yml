@@ -1,0 +1,51 @@
+name: Create Post
+
+on:
+  workflow_dispatch:
+    inputs:
+      title:
+        type: string
+        description: "Post title"
+      content:
+        type: string
+        description: "Post content"
+
+jobs:
+  create-post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: repo
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Generate filename
+        id: generate-filename
+        run: |
+          current_time=$(date +"%Y-%m-%d_%H-%M-%S")
+          echo "::set-output name=filename::${current_time}.md"
+
+      - name: Create contents directory if it doesn't exist
+        run: |
+          mkdir -p repo/contents
+
+      - name: Create markdown file
+        run: |
+          echo "# ${{ github.event.inputs.title }}" > repo/contents/${{ steps.generate-filename.outputs.filename }}
+          echo "" >> repo/contents/${{ steps.generate-filename.outputs.filename }}
+          echo "${{ github.event.inputs.content }}" >> repo/contents/${{ steps.generate-filename.outputs.filename }}
+
+      - name: Commit and push changes
+        run: |
+          cd repo
+          git config --local user.email "github-actions@example.com"
+          git config --local user.name "GitHub Actions"
+          git add contents/${{ steps.generate-filename.outputs.filename }}
+          git commit -m "Add new post: ${{ steps.generate-filename.outputs.filename }}"
+          git push origin main

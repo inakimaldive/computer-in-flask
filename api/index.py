@@ -1,4 +1,6 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for
+import requests
+import os
 
 app = Flask(__name__, template_folder='../templates')
 
@@ -18,3 +20,39 @@ def get_time():
 @app.route('/time-page')
 def time_page():
     return render_template('time.html')
+
+@app.route('/create-post')
+def create_post():
+    return render_template('create_post.html')
+
+@app.route('/submit-post', methods=['POST'])
+def submit_post():
+    title = request.form['title']
+    content = request.form['content']
+
+    github_token = os.environ.get('GITHUB_TOKEN')
+    repo_owner = "inakimaldive"
+    repo_name = "computer-in-flask"
+    workflow_id = "create-post.yml"
+
+    url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/actions/workflows/{workflow_id}/dispatches"
+
+    headers = {
+        "Accept": "application/vnd.github.v3+json",
+        "Authorization": f"token {github_token}"
+    }
+
+    data = {
+        "ref": "main",
+        "inputs": {
+            "title": title,
+            "content": content
+        }
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+
+    if response.status_code == 204:
+        return redirect(url_for('home'))
+    else:
+        return f"Failed to trigger workflow: {response.status_code} - {response.text}", 500

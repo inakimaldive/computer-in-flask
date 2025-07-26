@@ -1,28 +1,45 @@
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fexamples%2Ftree%2Fmain%2Fpython%2Fflask3&demo-title=Flask%203%20%2B%20Vercel&demo-description=Use%20Flask%203%20on%20Vercel%20with%20Serverless%20Functions%20using%20the%20Python%20Runtime.&demo-url=https%3A%2F%2Fflask3-python-template.vercel.app%2F&demo-image=https://assets.vercel.com/image/upload/v1669994156/random/flask.png)
+# Flask-Computer-in-a-Browser
 
-# Flask + Vercel
+This project is a Flask application that provides a simple web interface for creating and managing content. It uses HTMX for dynamic content updates and GitHub Actions to automate content creation.
 
-This example shows how to use Flask 3 on Vercel with Serverless Functions using the [Python Runtime](https://vercel.com/docs/concepts/functions/serverless-functions/runtimes/python).
+## Features
 
-## Demo
-
-https://flask-python-template.vercel.app/
+- **Landing Page:** A simple landing page with a navigation bar.
+- **Show Time:** A page that displays the current date and time, updated every second using HTMX.
+- **Create Post:** A form that allows users to create new posts. When a user submits the form, a GitHub Action is triggered to create a new markdown file in the `/contents` directory.
 
 ## How it Works
 
-This example uses the Web Server Gateway Interface (WSGI) with Flask to enable handling requests on Vercel with Serverless Functions.
+The application is built with Flask and uses a few key technologies:
+
+- **HTMX:** Used for the real-time clock feature, allowing the frontend to update without a full page reload.
+- **GitHub Actions:** Automates the creation of new posts. When a user submits the "Create Post" form, a workflow is triggered that creates a new markdown file in the `contents` directory.
 
 ## Running Locally
 
-```bash
-npm i -g vercel
-vercel dev
-```
+To run the application locally, you will need to have Python and Flask installed.
 
-Your Flask application is now available at `http://localhost:3000`.
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/inakimaldive/computer-in-flask.git
+    ```
+2.  **Install the dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+3.  **Set up the `GITHUB_TOKEN`:**
+    To use the "Create Post" feature, you will need to create a GitHub personal access token with the `repo` and `workflow` scopes. Add this token as an environment variable named `GITHUB_TOKEN`.
+    ```bash
+    export GITHUB_TOKEN="your_github_token"
+    ```
+4.  **Run the application:**
+    ```bash
+    ./start_server.sh
+    ```
+The application will be available at `http://localhost:5001`.
 
 ## One-Click Deploy
 
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=vercel-examples):
+You can also deploy this application to Vercel with a single click:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fexamples%2Ftree%2Fmain%2Fpython%2Fflask3&demo-title=Flask%203%20%2B%20Vercel&demo-description=Use%20Flask%203%20on%20Vercel%20with%20Serverless%20Functions%20using%20the%20Python%20Runtime.&demo-url=https%3A%2F%2Fflask3-python-template.vercel.app%2F&demo-image=https://assets.vercel.com/image/upload/v1669994156/random/flask.png)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Finakimaldive%2Fcomputer-in-flask)
