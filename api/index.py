@@ -167,3 +167,62 @@ def generate_post():
         return jsonify({'title': title, 'content': content})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/admin')
+def admin():
+    posts = get_posts()
+    return render_template('admin.html', posts=posts)
+
+def trigger_github_workflow(workflow_id, inputs):
+    github_token = os.environ.get('GITHUB_TOKEN')
+    GITHUB_REPO_OWNER = os.environ.get('GITHUB_REPO_OWNER', 'inakimaldive')
+    GITHUB_REPO_NAME = os.environ.get('GITHUB_REPO_NAME', 'computer-in-flask')
+
+    url = f"https://api.github.com/repos/{GITHUB_REPO_OWNER}/{GITHUB_REPO_NAME}/actions/workflows/{workflow_id}/dispatches"
+
+    headers = {
+        "Accept": "application/vnd.github.v3+json",
+        "Authorization": f"token {github_token}"
+    }
+
+    data = {
+        "ref": "main",
+        "inputs": inputs
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+    return response
+
+@app.route('/delete_post/<filename>')
+def delete_post(filename):
+    response = trigger_github_workflow('delete-post.yml', {'filename': filename})
+    if response.status_code == 204:
+        return redirect(url_for('admin'))
+    else:
+        return f"Failed to delete post: {response.status_code} - {response.text}", 500
+
+@app.route('/edit_post/<filename>')
+def edit_post(filename):
+    post_data = get_post(filename)
+    if post_data:
+        return render_template('edit_post.html', post=post_data, filename=filename)
+    else:
+        return "Post not found", 404
+
+@app.route('/update_post/<filename>', methods=['POST'])
+def update_post(filename):
+    title = request.form['title']
+    content = request.form['content']
+    
+    inputs = {
+        'filename': filename,
+        'title': title,
+        'content': content
+    }
+    
+    response = trigger_github_workflow('update-post.yml', inputs)
+    
+    if response.status_code == 204:
+        return redirect(url_for('admin'))
+    else:
+        return f"Failed to update post: {response.status_code} - {response.text}", 500

@@ -1,0 +1,29 @@
+name: Delete Post
+
+on:
+  workflow_dispatch:
+    inputs:
+      filename:
+        type: string
+        description: "Filename of the post to delete"
+        required: true
+
+jobs:
+  delete-post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete post file
+        run: |
+          rm -f contents/${{ github.event.inputs.filename }}
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git diff-index --quiet HEAD || git commit -m "Delete post: ${{ github.event.inputs.filename }}" && git push

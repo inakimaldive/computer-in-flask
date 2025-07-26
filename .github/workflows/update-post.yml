@@ -1,0 +1,39 @@
+name: Update Post
+
+on:
+  workflow_dispatch:
+    inputs:
+      filename:
+        type: string
+        description: "Filename of the post to update"
+        required: true
+      title:
+        type: string
+        description: "Post title"
+        required: true
+      content:
+        type: string
+        description: "Post content"
+        required: true
+
+jobs:
+  update-post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update post file
+        run: |
+          echo "# ${{ github.event.inputs.title }}" > contents/${{ github.event.inputs.filename }}
+          echo "" >> contents/${{ github.event.inputs.filename }}
+          echo "${{ github.event.inputs.content }}" >> contents/${{ github.event.inputs.filename }}
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git diff-index --quiet HEAD || git commit -m "Update post: ${{ github.event.inputs.filename }}" && git push
